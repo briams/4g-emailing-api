@@ -3,7 +3,6 @@ package storage
 import (
 	"database/sql"
 	"encoding/json"
-	"strings"
 
 	"github.com/briams/4g-emailing-api/db/rds"
 	"github.com/briams/4g-emailing-api/pkg/models/tag"
@@ -48,7 +47,7 @@ func (t *RedisTag) GetAll() (tag.Models, error) {
 	}
 
 	for _, tagVal := range redisValue {
-		tagVal.Name = strings.Title(strings.ToLower(tagVal.Name))
+		// tagVal.Name = strings.Title(strings.ToLower(tagVal.Name))
 		models = append(models, tagVal)
 	}
 
@@ -69,8 +68,11 @@ func (t *RedisTag) GetAllWithFields(fields ...string) ([]map[string]interface{},
 	for _, tagVal := range redisValue {
 		value := make(map[string]interface{})
 
-		valuesMap["tagId"] = tagVal.TagID
-		valuesMap["name"] = tagVal.Name
+		valuesMap["modelId"] = tagVal.ModelID
+		valuesMap["mjml"] = tagVal.Mjml
+		valuesMap["html"] = tagVal.Html
+		valuesMap["variables"] = tagVal.Variables
+		valuesMap["active"] = tagVal.Active
 		valuesMap["insUserId"] = tagVal.InsUserID
 		valuesMap["insDate"] = tagVal.InsDate
 		valuesMap["insDatetime"] = tagVal.InsDateTime
@@ -89,32 +91,30 @@ func (t *RedisTag) GetAllWithFields(fields ...string) ([]map[string]interface{},
 }
 
 // GetByID implement the interface tag.Storage for Redis
-func (t *RedisTag) GetByID(tagID uint) (*tag.Model, error) {
+func (t *RedisTag) GetByID(modelID string) (*tag.Model, error) {
 	redisValue, err := t.getRedisTagsMap()
 	if err != nil {
 		return nil, err
 	}
 
-	tagValue, ok := redisValue[tagID]
+	tagValue, ok := redisValue[modelID]
 	if !ok {
 		return nil, redis.Nil
 	}
-
-	tagValue.Name = strings.Title(strings.ToLower(tagValue.Name))
 
 	return tagValue, nil
 }
 
 // GetByIDs implement the interface tag.Storage
-func (t *RedisTag) GetByIDs(tagIDs ...uint) (tag.Models, error) {
+func (t *RedisTag) GetByIDs(modelIDs ...string) (tag.Models, error) {
 	models := make(tag.Models, 0)
 	redisValue, err := t.getRedisTagsMap()
 	if err != nil {
 		return nil, err
 	}
 
-	for _, tagID := range tagIDs {
-		tagVal, ok := redisValue[tagID]
+	for _, modelID := range modelIDs {
+		tagVal, ok := redisValue[modelID]
 		if ok {
 			models = append(models, tagVal)
 		}
@@ -149,10 +149,10 @@ func (t *RedisTag) RefreshData() error {
 		return err
 	}
 
-	redisValue := make(map[uint]*tag.Model)
+	redisValue := make(map[string]*tag.Model)
 
 	for _, m := range ms {
-		redisValue[m.TagID] = m
+		redisValue[m.ModelID] = m
 	}
 
 	j, err := json.Marshal(redisValue)
@@ -165,8 +165,8 @@ func (t *RedisTag) RefreshData() error {
 	return nil
 }
 
-func (t *RedisTag) getRedisTagsMap() (map[uint]*tag.Model, error) {
-	redisValue := make(map[uint]*tag.Model)
+func (t *RedisTag) getRedisTagsMap() (map[string]*tag.Model, error) {
+	redisValue := make(map[string]*tag.Model)
 
 	tagJSONstring, err := t.rdb.InfoFromRAM(redisVar)
 	if err != nil {
