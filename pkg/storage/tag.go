@@ -50,7 +50,7 @@ func (t *MySQLTag) Create(m *tag.Model) error {
 	defer stmt.Close()
 
 	now := utils.Now()
-	_, err := mysql.ExecAffectingOneRow(
+	err = mysql.ExecAffectingOneRow(
 		stmt,
 		m.ModelID, m.Mjml, m.Html, m.Variables,
 		m.InsUserID, now["date"], now["time"], now["unix"],
