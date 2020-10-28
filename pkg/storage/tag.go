@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"git.gdpteam.com/4gen/4g-tags-api/db/mysql"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/models/tag"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/models/tagaudit"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/utils"
+	"github.com/briams/4g-emailing-api/db/mysql"
+	"github.com/briams/4g-emailing-api/pkg/models/tag"
+	"github.com/briams/4g-emailing-api/pkg/models/tagaudit"
+	"github.com/briams/4g-emailing-api/pkg/utils"
 )
 
 var (

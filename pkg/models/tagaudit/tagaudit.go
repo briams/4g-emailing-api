@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/models/tag"
+	"github.com/briams/4g-emailing-api/pkg/models/tag"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"git.gdpteam.com/4gen/4g-tags-api/db/rds"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/models/tag"
+	"github.com/briams/4g-emailing-api/db/rds"
+	"github.com/briams/4g-emailing-api/pkg/models/tag"
 	"github.com/go-redis/redis/v8"
 )
 

@@ -3,9 +3,9 @@ package routes
 import (
 	"database/sql"
 
-	"git.gdpteam.com/4gen/4g-tags-api/db/rds"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/http/handlers"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/http/middlewares"
+	"github.com/briams/4g-emailing-api/db/rds"
+	"github.com/briams/4g-emailing-api/pkg/http/handlers"
+	"github.com/briams/4g-emailing-api/pkg/http/middlewares"
 	"github.com/labstack/echo/v4"
 )
 

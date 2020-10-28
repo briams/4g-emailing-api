@@ -3,7 +3,7 @@ package routes
 import (
 	"database/sql"
 
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/http/handlers"
+	"github.com/briams/4g-emailing-api/pkg/http/handlers"
 	"github.com/labstack/echo/v4"
 )
 

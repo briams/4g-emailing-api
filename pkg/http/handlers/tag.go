@@ -8,11 +8,11 @@ import (
 	"strconv"
 	"strings"
 
-	"git.gdpteam.com/4gen/4g-tags-api/db/rds"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/http/validators"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/models/tag"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/storage"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/utils"
+	"github.com/briams/4g-emailing-api/db/rds"
+	"github.com/briams/4g-emailing-api/pkg/http/validators"
+	"github.com/briams/4g-emailing-api/pkg/models/tag"
+	"github.com/briams/4g-emailing-api/pkg/storage"
+	"github.com/briams/4g-emailing-api/pkg/utils"
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 )

@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"git.gdpteam.com/4gen/4g-tags-api/db"
-	"git.gdpteam.com/4gen/4g-tags-api/db/rds"
+	"github.com/briams/4g-emailing-api/db"
+	"github.com/briams/4g-emailing-api/db/rds"
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 )

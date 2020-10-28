@@ -44,13 +44,13 @@ Software you need to install to be ready to Go!
 1. Locate your workspace
 
 ```sh
-cd ~$HOME/git.gdpteam.com/4gen/
+cd ~$HOME/github.com/briams/
 ```
 
 2. Clone the repo
 
 ```sh
-git clone http://git.gdpteam.com/4gen/4g-events-api.git
+git clone http://github.com/briams/4g-events-api.git
 ```
 
 3. Install Go packages

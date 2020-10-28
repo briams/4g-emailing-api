@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 
-	"git.gdpteam.com/4gen/4g-tags-api/db/mysql"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/models/tagaudit"
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/utils"
+	"github.com/briams/4g-emailing-api/db/mysql"
+	"github.com/briams/4g-emailing-api/pkg/models/tagaudit"
+	"github.com/briams/4g-emailing-api/pkg/utils"
 )
 
 var (
-	tableTagAudit       = "TagsAudit"
+	tableTagAudit       = "ModelsAudit"
 	mysqlCreateTagAudit = fmt.Sprintf(`
 		INSERT INTO %s (
 			modelId, mjmlPrev, htmlPrev, variablesPrev,

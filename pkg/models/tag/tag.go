@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/utils"
+	"github.com/briams/4g-emailing-api/pkg/utils"
 	"github.com/go-redis/redis/v8"
 )
 

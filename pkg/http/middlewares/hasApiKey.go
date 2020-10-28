@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"git.gdpteam.com/4gen/4g-tags-api/pkg/utils"
+	"github.com/briams/4g-emailing-api/pkg/utils"
 	"github.com/labstack/echo/v4"
 )
 

@@ -1,4 +1,4 @@
-module git.gdpteam.com/4gen/4g-tags-api
+module github.com/briams/4g-emailing-api
 
 go 1.15
 
