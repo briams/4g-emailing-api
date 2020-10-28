@@ -1,0 +1,264 @@
+basePath: /api/v1
+definitions:
+  utils.ResponseData:
+    properties:
+      code:
+        type: integer
+      href:
+        type: string
+      message:
+        type: string
+    type: object
+  utils.ResponseMessage:
+    properties:
+      data:
+        type: object
+      errors:
+        items:
+          $ref: '#/definitions/utils.ResponseData'
+        type: array
+      messages:
+        items:
+          $ref: '#/definitions/utils.ResponseData'
+        type: array
+    type: object
+  validators.CreateBody:
+    properties:
+      insUserId:
+        type: integer
+      name:
+        type: string
+    type: object
+  validators.UpdateBody:
+    properties:
+      name:
+        type: string
+      setUserId:
+        type: integer
+    type: object
+host: localhost:3030
+info:
+  contact:
+    email: brian.campos.castro@gmail.com
+    name: Brian Campos Castro
+  description: Games Provider API is a 4G Solution. Responsible of managing information emails..
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: 4g Emailing API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: returns the time from DB
+      parameters:
+      - description: API_KEY Header
+        in: header
+        name: API_KEY
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+      summary: returns the time from DB
+      tags:
+      - commons
+  /tags:
+    get:
+      consumes:
+      - application/json
+      description: Get all the tags by defining the fields
+      parameters:
+      - description: API_KEY Header
+        in: header
+        name: API_KEY
+        required: true
+        type: string
+      - description: Event fields
+        in: query
+        items:
+          type: string
+        name: fields
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+      summary: Get all tags
+      tags:
+      - tags
+    post:
+      consumes:
+      - application/json
+      description: Create a new tag item
+      parameters:
+      - description: New tag
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/validators.CreateBody'
+      - description: API_KEY Header
+        in: header
+        name: API_KEY
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+      summary: Create a tag
+      tags:
+      - tags
+  /tags/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a tag by id
+      parameters:
+      - description: API_KEY Header
+        in: header
+        name: API_KEY
+        required: true
+        type: string
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+      summary: Get a tag
+      tags:
+      - tags
+    put:
+      consumes:
+      - application/json
+      description: Update a tag item
+      parameters:
+      - description: API_KEY Header
+        in: header
+        name: API_KEY
+        required: true
+        type: string
+      - description: tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: tag Updated
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/validators.UpdateBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+      summary: Update a tag
+      tags:
+      - tags
+  /tags/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all the tags by ids
+      parameters:
+      - description: API_KEY Header
+        in: header
+        name: API_KEY
+        required: true
+        type: string
+      - description: Tags IDs
+        in: query
+        items:
+          type: string
+        name: tagIds
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.ResponseMessage'
+      summary: Get all tags by ids
+      tags:
+      - tags
+swagger: "2.0"
