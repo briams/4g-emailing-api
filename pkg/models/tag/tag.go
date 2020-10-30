@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
+	"github.com/briams/4g-emailing-api/pkg/mjmlparser"
 	"github.com/briams/4g-emailing-api/pkg/utils"
 	"github.com/go-redis/redis/v8"
 )
@@ -108,6 +110,20 @@ func (s *Service) Update(m *Model) error {
 	if m.ModelID == "" {
 		return ErrIDNotFound
 	}
+
+	fmt.Println("MJML: ", m.Mjml)
+
+	mjml, err := mjmlparser.GenerateMJMLWithData(m.Mjml, map[string]interface{}{})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("MJML Parser: ", mjml)
+
+	res := mjmlparser.ParserMJMLtoHTML(mjml)
+
+	fmt.Println("HTML: ", res.MJMLReplyResponse.HTML)
 
 	m.Html = m.Mjml
 	return s.storage.Update(m)
