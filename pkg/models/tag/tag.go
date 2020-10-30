@@ -32,7 +32,7 @@ type Model struct {
 	ModelID      string     `json:"modelId,omitempty"`
 	Mjml         string     `json:"mjml,omitempty"`
 	Html         string     `json:"html,omitempty"`
-	Variables    string     `json:"variables,omitempty"`
+	Variables    string     `json:"variables"`
 	Active       uint8      `json:"active,omitempty"`
 	InsUserID    uint       `json:"insUserId,omitempty"`
 	InsDate      *time.Time `json:"insDate,omitempty"`
@@ -67,6 +67,7 @@ func NewService(s Storage) *Service {
 func (s *Service) Create(m *Model) error {
 	currentModel, err := s.GetByID(m.ModelID)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, redis.Nil) {
+		m.Html = m.Mjml
 		return s.storage.Create(m)
 	}
 	if currentModel.ModelID == m.ModelID {
@@ -108,5 +109,6 @@ func (s *Service) Update(m *Model) error {
 		return ErrIDNotFound
 	}
 
+	m.Html = m.Mjml
 	return s.storage.Update(m)
 }

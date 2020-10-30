@@ -229,11 +229,13 @@ func (t *MySQLTag) Update(m *tag.Model) error {
 func (t *MySQLTag) scanRow(s mysql.RowScanner) (*tag.Model, error) {
 	tag := &tag.Model{}
 
+	variablesNull := sql.NullString{}
+
 	if err := s.Scan(
 		&tag.ModelID,
 		&tag.Mjml,
 		&tag.Html,
-		&tag.Variables,
+		&variablesNull,
 		&tag.Active,
 		&tag.InsUserID,
 		&tag.InsDate,
@@ -243,5 +245,6 @@ func (t *MySQLTag) scanRow(s mysql.RowScanner) (*tag.Model, error) {
 		return nil, err
 	}
 
+	tag.Variables = variablesNull.String
 	return tag, nil
 }

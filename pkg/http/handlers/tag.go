@@ -5,8 +5,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/briams/4g-emailing-api/db/rds"
 	"github.com/briams/4g-emailing-api/pkg/http/validators"
@@ -67,7 +65,9 @@ func (p *TagHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, mr)
 	}
 
-	m.Name = strings.TrimSpace(strings.ToLower(b.Name))
+	m.ModelID = b.ModelID
+	m.Mjml = b.Mjml
+	m.Variables = b.Variables
 	m.InsUserID = b.InsUserID
 
 	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
@@ -92,9 +92,9 @@ func (p *TagHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, mr)
 	}
 
-	m, _ = serviceTag.GetByID(m.TagID)
+	m, _ = serviceTag.GetByID(m.ModelID)
 
-	mr.AddMessage(http.StatusCreated, "Param Created Successfully", "")
+	mr.AddMessage(http.StatusCreated, "Tag Created Successfully", "")
 	mr.Data = m
 
 	return c.JSON(http.StatusCreated, mr)
@@ -115,21 +115,22 @@ func (p *TagHandler) Create(c echo.Context) error {
 func (p *TagHandler) GetAll(c echo.Context) error {
 	mr := utils.ResponseMessage{}
 
-	tagFields := c.QueryParam("fields")
-	tagFieldsSlice := strings.Split(tagFields, ",")
-	if len(tagFields) == 0 {
-		log.Println("warning: There is not any event fields")
-		mr.AddError(
-			http.StatusBadRequest,
-			"One event field must be sended at least in the query event: fields",
-			"Check the service logs for details",
-		)
-		return c.JSON(http.StatusBadRequest, mr)
-	}
+	// tagFields := c.QueryParam("fields")
+	// tagFieldsSlice := strings.Split(tagFields, ",")
+	// if len(tagFields) == 0 {
+	// 	log.Println("warning: There is not any event fields")
+	// 	mr.AddError(
+	// 		http.StatusBadRequest,
+	// 		"One event field must be sended at least in the query event: fields",
+	// 		"Check the service logs for details",
+	// 	)
+	// 	return c.JSON(http.StatusBadRequest, mr)
+	// }
 
 	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
 	serviceTag := tag.NewService(storageTag)
-	res, err := serviceTag.GetAllWithFields(tagFieldsSlice...)
+	// res, err := serviceTag.GetAllWithFields(tagFieldsSlice...)
+	res, err := serviceTag.GetAll()
 	if errors.Is(err, tag.ErrFieldsDoesNotExist) {
 		log.Printf("error: no se pudo obtener la información. Handler event.GetAll: %v", err)
 		mr.AddError(
@@ -171,25 +172,26 @@ func (p *TagHandler) GetAll(c echo.Context) error {
 func (p *TagHandler) GetByID(c echo.Context) error {
 	mr := utils.ResponseMessage{}
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		log.Printf("the ID must be numeric. Handler tag.GetByID: %v", err)
-		mr.AddError(
-			http.StatusUnprocessableEntity,
-			"¡Upps! el id que nos enviaste no es un número entero",
-			"",
-		)
-		return c.JSON(http.StatusUnprocessableEntity, mr)
-	}
+	id := c.Param("id")
+	// id, err := strconv.Atoi(c.Param("id"))
+	// if err != nil {
+	// 	log.Printf("the ID must be numeric. Handler tag.GetByID: %v", err)
+	// 	mr.AddError(
+	// 		http.StatusUnprocessableEntity,
+	// 		"¡Upps! el id que nos enviaste no es un número entero",
+	// 		"",
+	// 	)
+	// 	return c.JSON(http.StatusUnprocessableEntity, mr)
+	// }
 
 	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
 	serviceTag := tag.NewService(storageTag)
-	res, err := serviceTag.GetByID(uint(id))
+	res, err := serviceTag.GetByID(id)
 
 	if errors.Is(err, redis.Nil) {
 		mr.AddMessage(
 			http.StatusNotFound,
-			"tag not found with id "+strconv.Itoa(id),
+			"tag not found with id "+id,
 			"",
 		)
 		return c.JSON(http.StatusNotFound, mr)
@@ -229,18 +231,19 @@ func (p *TagHandler) Update(c echo.Context) error {
 	b := &validators.UpdateBody{}
 	m := &tag.Model{}
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		log.Printf("the ID must be numeric. Handler tag.GetByID: %v", err)
-		mr.AddError(
-			http.StatusUnprocessableEntity,
-			"¡Upps! el id que nos enviaste no es un número entero",
-			"",
-		)
-		return c.JSON(http.StatusUnprocessableEntity, mr)
-	}
+	id := c.Param("id")
+	// id, err := strconv.Atoi(c.Param("id"))
+	// if err != nil {
+	// 	log.Printf("the ID must be numeric. Handler tag.GetByID: %v", err)
+	// 	mr.AddError(
+	// 		http.StatusUnprocessableEntity,
+	// 		"¡Upps! el id que nos enviaste no es un número entero",
+	// 		"",
+	// 	)
+	// 	return c.JSON(http.StatusUnprocessableEntity, mr)
+	// }
 
-	err = c.Bind(b)
+	err := c.Bind(b)
 	if err != nil {
 		log.Printf("warning: incorrect structure. Handler tag.Update: %v", err)
 		mr.AddError(
@@ -262,8 +265,9 @@ func (p *TagHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, mr)
 	}
 
-	m.TagID = uint(id)
-	m.Name = strings.TrimSpace(strings.ToLower(b.Name))
+	m.ModelID = id
+	m.Mjml = b.Mjml
+	m.Variables = b.Variables
 	m.InsUserID = b.SetUserID
 
 	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
@@ -272,7 +276,7 @@ func (p *TagHandler) Update(c echo.Context) error {
 	if errors.Is(err, sql.ErrNoRows) {
 		mr.AddMessage(
 			http.StatusNotFound,
-			"tag not found with id "+strconv.Itoa(id),
+			"tag not found with id "+id,
 			"",
 		)
 		return c.JSON(http.StatusNotFound, mr)
@@ -287,7 +291,7 @@ func (p *TagHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, mr)
 	}
 
-	m, _ = serviceTag.GetByID(uint(id))
+	m, _ = serviceTag.GetByID(id)
 
 	mr.AddMessage(http.StatusOK, "Param Updated Successfully.", "")
 	mr.Data = m
