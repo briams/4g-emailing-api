@@ -2,7 +2,6 @@ package mjmlparser
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -39,7 +38,7 @@ func ParserMJMLtoHTML(mjmlStr string) *MJMLResponse {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(statusCode, string(body))
+	// fmt.Println(statusCode, string(body))
 
 	response := &MJMLResponse{}
 
@@ -53,6 +52,7 @@ func ParserMJMLtoHTML(mjmlStr string) *MJMLResponse {
 	}
 
 	okRes := &MJMLReplyResponse{}
+
 	json.Unmarshal(body, okRes)
 
 	response.MJMLReplyResponse = okRes

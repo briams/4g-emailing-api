@@ -111,20 +111,17 @@ func (s *Service) Update(m *Model) error {
 		return ErrIDNotFound
 	}
 
-	fmt.Println("MJML: ", m.Mjml)
-
 	mjml, err := mjmlparser.GenerateMJMLWithData(m.Mjml, map[string]interface{}{})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("MJML Parser: ", mjml)
-
 	res := mjmlparser.ParserMJMLtoHTML(mjml)
 
-	fmt.Println("HTML: ", res.MJMLReplyResponse.HTML)
+	m.Html = res.MJMLReplyResponse.HTML
+	// m.Mjml
+	// fmt.Println("HTML: ", res.MJMLReplyResponse.HTML)
 
-	m.Html = m.Mjml
 	return s.storage.Update(m)
 }
