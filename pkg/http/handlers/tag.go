@@ -273,6 +273,7 @@ func (p *TagHandler) Update(c echo.Context) error {
 	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
 	serviceTag := tag.NewService(storageTag)
 	err = serviceTag.Update(m)
+
 	if errors.Is(err, sql.ErrNoRows) {
 		mr.AddMessage(
 			http.StatusNotFound,
@@ -294,6 +295,153 @@ func (p *TagHandler) Update(c echo.Context) error {
 	m, _ = serviceTag.GetByID(id)
 
 	mr.AddMessage(http.StatusOK, "Param Updated Successfully.", "")
+	mr.Data = m
+
+	return c.JSON(http.StatusOK, mr)
+}
+
+// Activate godoc
+// @Summary Activate a tag
+// @Description Activate a tag item
+// @Tags tags
+// @Accept json
+// @Produce json
+// @Param API_KEY header string required "API_KEY Header"
+// @Param id path string true "Tag ID"
+// @Param tag body tags.ActiveLogBody true "Tag Activated"
+// @Success 200 {object} utils.ResponseMessage
+// @Failure 400 {object} utils.ResponseMessage
+// @Failure 404 {object} utils.ResponseMessage
+// @Failure 500 {object} utils.ResponseMessage
+// @Router /tags/{id}/activate [patch]
+func (p *TagHandler) Activate(c echo.Context) error {
+	mr := utils.ResponseMessage{}
+	b := &validators.ActiveLogBody{}
+
+	id := c.Param("id")
+	err := c.Bind(b)
+	if err != nil {
+		log.Printf("warning: Incorrect structure. Handler tag.Activate: %v", err)
+		mr.AddError(
+			http.StatusBadRequest,
+			"A correct structure must be sended",
+			"Check logs on the server for more details",
+		)
+		return c.JSON(http.StatusBadRequest, mr)
+	}
+
+	if errors := b.Validate(); errors != nil {
+		log.Printf("warning: Invalid data. Handler tag.Activate: %v", errors)
+		mr.AddError(
+			http.StatusBadRequest,
+			"Invalid Data",
+			"Check the documentation for more details",
+		)
+		mr.Data = errors
+		return c.JSON(http.StatusBadRequest, mr)
+	}
+
+	// Enviando datos al Storage(Repository) storage/model
+	storageActiveLog := storage.NewMySQLModelActiveLog(p.DB)
+
+	storageTag := storage.NewMySQLTag(p.DB, nil, storageActiveLog)
+	serviceTag := tag.NewService(storageTag)
+	err = serviceTag.Activate(id, b.Reason, b.SetUserID)
+
+	if err == sql.ErrNoRows {
+		mr.AddMessage(
+			http.StatusNoContent,
+			"tag not found with id "+id,
+			"",
+		)
+		return c.JSON(http.StatusOK, mr)
+	}
+	if err != nil {
+		log.Printf("error: tag not found with id: %s. Handler tag.Activate: %v", id, err)
+		mr.AddError(
+			http.StatusInternalServerError,
+			"Cannot fetch the information",
+			"Check logs on the server for more details",
+		)
+		return c.JSON(http.StatusInternalServerError, mr)
+	}
+
+	m, _ := storageTag.GetByID(id)
+
+	mr.AddMessage(http.StatusOK, "tag Activated successfully.", "")
+	mr.Data = m
+
+	return c.JSON(http.StatusOK, mr)
+}
+
+// Deactivate godoc
+// @Summary Deactivate a tag
+// @Description Deactivate a tag item
+// @Tags tags
+// @Accept json
+// @Produce json
+// @Param API_KEY header string required "API_KEY Header"
+// @Param id path string true "Tag ID"
+// @Param tag body tags.ActiveLogBody true "Tag Deactivate"
+// @Success 200 {object} utils.ResponseMessage
+// @Failure 400 {object} utils.ResponseMessage
+// @Failure 404 {object} utils.ResponseMessage
+// @Failure 500 {object} utils.ResponseMessage
+// @Router /tags/{id}/deactivate [patch]
+func (p *TagHandler) Deactivate(c echo.Context) error {
+	mr := utils.ResponseMessage{}
+	b := &validators.ActiveLogBody{}
+
+	id := c.Param("id")
+	err := c.Bind(b)
+	if err != nil {
+		log.Printf("warning: Incorrect structure. Handler tag.Deactivate: %v", err)
+		mr.AddError(
+			http.StatusBadRequest,
+			"A correct structure must be sended",
+			"Check logs on the server for more details",
+		)
+		return c.JSON(http.StatusBadRequest, mr)
+	}
+
+	if errors := b.Validate(); errors != nil {
+		log.Printf("warning: invalid data. Handler tag.Deactivate: %v", errors)
+		mr.AddError(
+			http.StatusBadRequest,
+			"Invalid Data",
+			"Check the documentation for more details",
+		)
+		mr.Data = errors
+		return c.JSON(http.StatusBadRequest, mr)
+	}
+
+	// Enviando datos al Storage(Repository) storage/service
+	storageActiveLog := storage.NewMySQLModelActiveLog(p.DB)
+
+	storageTag := storage.NewMySQLTag(p.DB, nil, storageActiveLog)
+	serviceTag := tag.NewService(storageTag)
+	err = serviceTag.Deactivate(id, b.Reason, b.SetUserID)
+	if err == sql.ErrNoRows {
+		mr.AddMessage(
+			http.StatusNoContent,
+			"tag not found with id "+id,
+			"",
+		)
+		return c.JSON(http.StatusOK, mr)
+	}
+	if err != nil {
+		log.Printf("error: tag not found with id: %s. Handler tag.Deactivate: %v", id, err)
+		mr.AddError(
+			http.StatusInternalServerError,
+			"Cannot fetch the information",
+			"Check logs on the server for more details",
+		)
+		return c.JSON(http.StatusInternalServerError, mr)
+	}
+
+	m, _ := storageTag.GetByID(id)
+
+	mr.AddMessage(http.StatusOK, "tag Deactivated successfully.", "")
 	mr.Data = m
 
 	return c.JSON(http.StatusOK, mr)

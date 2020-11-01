@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/briams/4g-emailing-api/db/mysql"
+	"github.com/briams/4g-emailing-api/pkg/models/modelactivelog"
 	"github.com/briams/4g-emailing-api/pkg/models/tag"
 	"github.com/briams/4g-emailing-api/pkg/models/tagaudit"
 	"github.com/briams/4g-emailing-api/pkg/utils"
@@ -25,19 +26,23 @@ var (
 		FROM %s`, tableTag)
 	mysqlGetTagByID   = mysqlGetAllTags + " WHERE modelId = ?"
 	mysqlGetTagsByIDs = mysqlGetAllTags + " WHERE modelId IN "
+	mysqlUpdateActive = fmt.Sprintf(`UPDATE %s SET
+		active = ? WHERE serviceId = ?`, tableTag)
 )
 
 // MySQLTag used for work with mySQL - para
 type MySQLTag struct {
-	db           *sql.DB
-	storageAudit tagaudit.Storage
+	db               *sql.DB
+	storageAudit     tagaudit.Storage
+	storageActiveLog modelactivelog.Storage
 }
 
 // NewMySQLTag return a new pointer of MySQLTag
-func NewMySQLTag(db *sql.DB, a tagaudit.Storage) *MySQLTag {
+func NewMySQLTag(db *sql.DB, a tagaudit.Storage, e modelactivelog.Storage) *MySQLTag {
 	return &MySQLTag{
-		db:           db,
-		storageAudit: a,
+		db:               db,
+		storageAudit:     a,
+		storageActiveLog: e,
 	}
 }
 
@@ -221,6 +226,90 @@ func (t *MySQLTag) Update(m *tag.Model) error {
 	if err := t.storageAudit.CreateTx(tx, tagAudit); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("Audit: %w", err)
+	}
+
+	return tx.Commit()
+}
+
+// Activate implements the interface service.Storage
+func (t *MySQLTag) Activate(modelID string, reason string, setUserID uint) error {
+	active := 1
+	tx, err := t.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	stmt, err := tx.Prepare(mysqlUpdateActive)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("Tag: %w", err)
+	}
+	defer stmt.Close()
+
+	r, err := stmt.Exec(active, modelID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("Tag: %w", err)
+	}
+
+	rowsAffected, err := r.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("Mysql: Could not get rows affected: %v", err)
+	} else if rowsAffected != 1 {
+		return tx.Commit()
+	}
+
+	modelactivelog := &modelactivelog.Model{
+		ModelID:   modelID,
+		Reason:    reason,
+		Active:    uint8(active),
+		SetUserID: setUserID,
+	}
+	if err := t.storageActiveLog.CreateTx(tx, modelactivelog); err != nil {
+		tx.Rollback()
+		return fmt.Errorf("Active Log: %w", err)
+	}
+
+	return tx.Commit()
+}
+
+// Deactivate implements the interface service.Storage
+func (t *MySQLTag) Deactivate(modelID string, reason string, setUserID uint) error {
+	active := 0
+	tx, err := t.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	stmt, err := tx.Prepare(mysqlUpdateActive)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("Tag: %w", err)
+	}
+	defer stmt.Close()
+
+	r, err := stmt.Exec(active, modelID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("Tag: %w", err)
+	}
+
+	rowsAffected, err := r.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("Mysql: Could not get rows affected: %v", err)
+	} else if rowsAffected != 1 {
+		return tx.Commit()
+	}
+
+	modelactivelog := &modelactivelog.Model{
+		ModelID:   modelID,
+		Reason:    reason,
+		Active:    uint8(active),
+		SetUserID: setUserID,
+	}
+	if err := t.storageActiveLog.CreateTx(tx, modelactivelog); err != nil {
+		tx.Rollback()
+		return fmt.Errorf("Active Log: %w", err)
 	}
 
 	return tx.Commit()

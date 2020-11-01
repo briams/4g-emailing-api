@@ -18,6 +18,8 @@ func ParamRoutes(e *echo.Echo, db *sql.DB, rdb *rds.Rds) {
 	r.POST("", h.Create)
 	r.GET("", h.GetAll)
 	r.GET("/:id", h.GetByID)
-	// r.GET("/list", h.GetByIDs)
 	r.PUT("/:id", h.Update)
+	r.PATCH("/:id/activate", h.Activate)
+	r.PATCH("/:id/deactivate", h.Deactivate)
+
 }

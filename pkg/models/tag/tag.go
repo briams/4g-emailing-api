@@ -53,6 +53,8 @@ type Storage interface {
 	GetByIDs(...string) (Models, error)
 	GetAll() (Models, error)
 	GetAllWithFields(...string) ([]map[string]interface{}, error)
+	Activate(string, string, uint) error
+	Deactivate(string, string, uint) error
 }
 
 // Service of model
@@ -124,4 +126,14 @@ func (s *Service) Update(m *Model) error {
 	// fmt.Println("HTML: ", res.MJMLReplyResponse.HTML)
 
 	return s.storage.Update(m)
+}
+
+// Activate is used for active a service
+func (s *Service) Activate(id string, reason string, setUserID uint) error {
+	return s.storage.Activate(id, reason, setUserID)
+}
+
+// Deactivate is used for deactive a service
+func (s *Service) Deactivate(id string, reason string, setUserID uint) error {
+	return s.storage.Deactivate(id, reason, setUserID)
 }
