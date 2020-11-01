@@ -17,7 +17,7 @@ Following main tasks accomplished by the microservice:
 * Managing Models
 * Mananing Model
 * Retrieve list of model
-* Update tag with audit information
+* Update model with audit information
 * Retrieve Mogels with the desired fields
 * Create Many Models at once
 

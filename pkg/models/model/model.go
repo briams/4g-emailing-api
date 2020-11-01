@@ -1,4 +1,4 @@
-package tag
+package model
 
 import (
 	"database/sql"
@@ -29,7 +29,7 @@ var ExistingFields = []string{
 	"insDate", "insDatetime", "insTimestamp",
 }
 
-// Model of Param
+// Model of Model
 type Model struct {
 	ModelID      string     `json:"modelId,omitempty"`
 	Mjml         string     `json:"mjml,omitempty"`

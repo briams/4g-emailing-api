@@ -6,49 +6,49 @@ import (
 	"strings"
 
 	"github.com/briams/4g-emailing-api/db/mysql"
+	"github.com/briams/4g-emailing-api/pkg/models/model"
 	"github.com/briams/4g-emailing-api/pkg/models/modelactivelog"
-	"github.com/briams/4g-emailing-api/pkg/models/tag"
-	"github.com/briams/4g-emailing-api/pkg/models/tagaudit"
+	"github.com/briams/4g-emailing-api/pkg/models/modelaudit"
 	"github.com/briams/4g-emailing-api/pkg/utils"
 )
 
 var (
-	tableTag       = "Models"
-	mysqlCreateTag = fmt.Sprintf(`INSERT INTO %s
+	tableModel       = "Models"
+	mysqlCreateModel = fmt.Sprintf(`INSERT INTO %s
 		(modelId, mjml, html, variables,
 		insUserId, insDate, insDatetime, insTimestamp)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, tableTag)
-	mysqlUpdateTag = fmt.Sprintf(`UPDATE %s SET
-	mjml = ?, html = ?, variables = ? WHERE modelId = ?`, tableTag)
-	mysqlGetAllTags = fmt.Sprintf(`SELECT
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, tableModel)
+	mysqlUpdateModel = fmt.Sprintf(`UPDATE %s SET
+	mjml = ?, html = ?, variables = ? WHERE modelId = ?`, tableModel)
+	mysqlGetAllModels = fmt.Sprintf(`SELECT
 		modelId, mjml, html, variables, active,
 		insUserId, insDate, insDatetime, insTimestamp
-		FROM %s`, tableTag)
-	mysqlGetTagByID   = mysqlGetAllTags + " WHERE modelId = ?"
-	mysqlGetTagsByIDs = mysqlGetAllTags + " WHERE modelId IN "
-	mysqlUpdateActive = fmt.Sprintf(`UPDATE %s SET
-		active = ? WHERE modelId = ?`, tableTag)
+		FROM %s`, tableModel)
+	mysqlGetModelByID   = mysqlGetAllModels + " WHERE modelId = ?"
+	mysqlGetModelsByIDs = mysqlGetAllModels + " WHERE modelId IN "
+	mysqlUpdateActive   = fmt.Sprintf(`UPDATE %s SET
+		active = ? WHERE modelId = ?`, tableModel)
 )
 
-// MySQLTag used for work with mySQL - para
-type MySQLTag struct {
+// MySQLModel used for work with mySQL - para
+type MySQLModel struct {
 	db               *sql.DB
-	storageAudit     tagaudit.Storage
+	storageAudit     modelaudit.Storage
 	storageActiveLog modelactivelog.Storage
 }
 
-// NewMySQLTag return a new pointer of MySQLTag
-func NewMySQLTag(db *sql.DB, a tagaudit.Storage, e modelactivelog.Storage) *MySQLTag {
-	return &MySQLTag{
+// NewMySQLModel return a new pointer of MySQLModel
+func NewMySQLModel(db *sql.DB, a modelaudit.Storage, e modelactivelog.Storage) *MySQLModel {
+	return &MySQLModel{
 		db:               db,
 		storageAudit:     a,
 		storageActiveLog: e,
 	}
 }
 
-// Create implement the interface tag.Storage
-func (t *MySQLTag) Create(m *tag.Model) error {
-	stmt, err := t.db.Prepare(mysqlCreateTag)
+// Create implement the interface model.Storage
+func (t *MySQLModel) Create(m *model.Model) error {
+	stmt, err := t.db.Prepare(mysqlCreateModel)
 	if err != nil {
 		return err
 	}
@@ -68,9 +68,9 @@ func (t *MySQLTag) Create(m *tag.Model) error {
 	return nil
 }
 
-// GetByID implement the interface tag.Storage
-func (t *MySQLTag) GetByID(modelID string) (*tag.Model, error) {
-	stmt, err := t.db.Prepare(mysqlGetTagByID)
+// GetByID implement the interface model.Storage
+func (t *MySQLModel) GetByID(modelID string) (*model.Model, error) {
+	stmt, err := t.db.Prepare(mysqlGetModelByID)
 	if err != nil {
 		return nil, err
 	}
@@ -79,11 +79,11 @@ func (t *MySQLTag) GetByID(modelID string) (*tag.Model, error) {
 	return t.scanRow(stmt.QueryRow(modelID))
 }
 
-// GetByIDs implement the interface tag.Storage
-func (t *MySQLTag) GetByIDs(modelIDs ...string) (tag.Models, error) {
-	ms := make(tag.Models, 0)
+// GetByIDs implement the interface model.Storage
+func (t *MySQLModel) GetByIDs(modelIDs ...string) (model.Models, error) {
+	ms := make(model.Models, 0)
 
-	q := mysqlGetTagsByIDs + "(?" + strings.Repeat(",?", len(modelIDs)-1) + ")"
+	q := mysqlGetModelsByIDs + "(?" + strings.Repeat(",?", len(modelIDs)-1) + ")"
 	stmt, err := t.db.Prepare(q)
 	if err != nil {
 		return nil, err
@@ -113,11 +113,11 @@ func (t *MySQLTag) GetByIDs(modelIDs ...string) (tag.Models, error) {
 	return ms, nil
 }
 
-// GetAll implement the interface tag.Storage
-func (t *MySQLTag) GetAll() (tag.Models, error) {
-	ms := make(tag.Models, 0)
+// GetAll implement the interface model.Storage
+func (t *MySQLModel) GetAll() (model.Models, error) {
+	ms := make(model.Models, 0)
 
-	stmt, err := t.db.Prepare(mysqlGetAllTags)
+	stmt, err := t.db.Prepare(mysqlGetAllModels)
 	if err != nil {
 		return nil, err
 	}
@@ -141,13 +141,13 @@ func (t *MySQLTag) GetAll() (tag.Models, error) {
 	return ms, nil
 }
 
-// GetAllWithFields implement the interface tag.Storage
-func (t *MySQLTag) GetAllWithFields(fields ...string) ([]map[string]interface{}, error) {
+// GetAllWithFields implement the interface model.Storage
+func (t *MySQLModel) GetAllWithFields(fields ...string) ([]map[string]interface{}, error) {
 	values := make([]map[string]interface{}, 0)
 
 	fieldsQuery := strings.Join(fields, ", ")
 
-	mysqlQuery := fmt.Sprintf("SELECT %s FROM %s", fieldsQuery, tableTag)
+	mysqlQuery := fmt.Sprintf("SELECT %s FROM %s", fieldsQuery, tableModel)
 
 	stmt, err := t.db.Prepare(mysqlQuery)
 	if err != nil {
@@ -186,9 +186,9 @@ func (t *MySQLTag) GetAllWithFields(fields ...string) ([]map[string]interface{},
 	return values, nil
 }
 
-// Update implements the interface tag.Storage
-func (t *MySQLTag) Update(m *tag.Model) error {
-	prevTag, err := t.GetByID(m.ModelID)
+// Update implements the interface model.Storage
+func (t *MySQLModel) Update(m *model.Model) error {
+	prevModel, err := t.GetByID(m.ModelID)
 	if err != nil {
 		return err
 	}
@@ -198,17 +198,17 @@ func (t *MySQLTag) Update(m *tag.Model) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(mysqlUpdateTag)
+	stmt, err := tx.Prepare(mysqlUpdateModel)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("Tag: %w", err)
+		return fmt.Errorf("Model: %w", err)
 	}
 	defer stmt.Close()
 
 	r, err := stmt.Exec(m.Mjml, m.Html, m.Variables, m.ModelID)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("Tag: %w", err)
+		return fmt.Errorf("Model: %w", err)
 	}
 
 	rowsAffected, err := r.RowsAffected()
@@ -218,12 +218,12 @@ func (t *MySQLTag) Update(m *tag.Model) error {
 		return tx.Commit()
 	}
 
-	tagAudit := &tagaudit.Model{
-		PrevTag:   *prevTag,
-		Tag:       *m,
+	modelAudit := &modelaudit.Model{
+		PrevModel: *prevModel,
+		Model:     *m,
 		SetUserID: m.InsUserID,
 	}
-	if err := t.storageAudit.CreateTx(tx, tagAudit); err != nil {
+	if err := t.storageAudit.CreateTx(tx, modelAudit); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("Audit: %w", err)
 	}
@@ -232,7 +232,7 @@ func (t *MySQLTag) Update(m *tag.Model) error {
 }
 
 // Activate implements the interface service.Storage
-func (t *MySQLTag) Activate(modelID string, reason string, setUserID uint) error {
+func (t *MySQLModel) Activate(modelID string, reason string, setUserID uint) error {
 	active := 1
 	tx, err := t.db.Begin()
 	if err != nil {
@@ -242,14 +242,14 @@ func (t *MySQLTag) Activate(modelID string, reason string, setUserID uint) error
 	stmt, err := tx.Prepare(mysqlUpdateActive)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("Tag: %w", err)
+		return fmt.Errorf("Model: %w", err)
 	}
 	defer stmt.Close()
 
 	r, err := stmt.Exec(active, modelID)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("Tag: %w", err)
+		return fmt.Errorf("Model: %w", err)
 	}
 
 	rowsAffected, err := r.RowsAffected()
@@ -274,7 +274,7 @@ func (t *MySQLTag) Activate(modelID string, reason string, setUserID uint) error
 }
 
 // Deactivate implements the interface service.Storage
-func (t *MySQLTag) Deactivate(modelID string, reason string, setUserID uint) error {
+func (t *MySQLModel) Deactivate(modelID string, reason string, setUserID uint) error {
 	active := 0
 	tx, err := t.db.Begin()
 	if err != nil {
@@ -284,14 +284,14 @@ func (t *MySQLTag) Deactivate(modelID string, reason string, setUserID uint) err
 	stmt, err := tx.Prepare(mysqlUpdateActive)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("Tag: %w", err)
+		return fmt.Errorf("Model: %w", err)
 	}
 	defer stmt.Close()
 
 	r, err := stmt.Exec(active, modelID)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("Tag: %w", err)
+		return fmt.Errorf("Model: %w", err)
 	}
 
 	rowsAffected, err := r.RowsAffected()
@@ -315,25 +315,25 @@ func (t *MySQLTag) Deactivate(modelID string, reason string, setUserID uint) err
 	return tx.Commit()
 }
 
-func (t *MySQLTag) scanRow(s mysql.RowScanner) (*tag.Model, error) {
-	tag := &tag.Model{}
+func (t *MySQLModel) scanRow(s mysql.RowScanner) (*model.Model, error) {
+	model := &model.Model{}
 
 	variablesNull := sql.NullString{}
 
 	if err := s.Scan(
-		&tag.ModelID,
-		&tag.Mjml,
-		&tag.Html,
+		&model.ModelID,
+		&model.Mjml,
+		&model.Html,
 		&variablesNull,
-		&tag.Active,
-		&tag.InsUserID,
-		&tag.InsDate,
-		&tag.InsDateTime,
-		&tag.InsTimestamp,
+		&model.Active,
+		&model.InsUserID,
+		&model.InsDate,
+		&model.InsDateTime,
+		&model.InsTimestamp,
 	); err != nil {
 		return nil, err
 	}
 
-	tag.Variables = variablesNull.String
-	return tag, nil
+	model.Variables = variablesNull.String
+	return model, nil
 }

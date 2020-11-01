@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Games Provider API is a 4G Solution. Responsible of managing information tags..",
-        "title": "4g Tags API",
+        "description": "Games Provider API is a 4G Solution. Responsible of managing information models..",
+        "title": "4g Models API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "Brian Campos Castro",
@@ -26,7 +26,7 @@
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
+                "models": [
                     "commons"
                 ],
                 "summary": "returns the time from DB",
@@ -55,19 +55,19 @@
                 }
             }
         },
-        "/tags": {
+        "/models": {
             "get": {
-                "description": "Get all the tags by defining the fields",
+                "description": "Get all the models by defining the fields",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Get all tags",
+                "summary": "Get all models",
                 "parameters": [
                     {
                         "type": "string",
@@ -109,21 +109,21 @@
                 }
             },
             "post": {
-                "description": "Create a new tag item",
+                "description": "Create a new model item",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Create a tag",
+                "summary": "Create a model",
                 "parameters": [
                     {
-                        "description": "New tag",
-                        "name": "tag",
+                        "description": "New model",
+                        "name": "model",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -160,19 +160,19 @@
                 }
             }
         },
-        "/tags/list": {
+        "/models/list": {
             "get": {
-                "description": "Get all the tags by ids",
+                "description": "Get all the models by ids",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Get all tags by ids",
+                "summary": "Get all models by ids",
                 "parameters": [
                     {
                         "type": "string",
@@ -186,8 +186,8 @@
                         "items": {
                             "type": "string"
                         },
-                        "description": "Tags IDs",
-                        "name": "tagIds",
+                        "description": "models IDs",
+                        "name": "modelIds",
                         "in": "query",
                         "required": true
                     }
@@ -214,19 +214,19 @@
                 }
             }
         },
-        "/tags/{id}": {
+        "/models/{id}": {
             "get": {
-                "description": "Get a tag by id",
+                "description": "Get a model by id",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Get a tag",
+                "summary": "Get a model",
                 "parameters": [
                     {
                         "type": "string",
@@ -237,7 +237,7 @@
                     },
                     {
                         "type": "string",
-                        "description": "Tag ID",
+                        "description": "model ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -271,17 +271,17 @@
                 }
             },
             "put": {
-                "description": "Update a tag item",
+                "description": "Update a model item",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Update a tag",
+                "summary": "Update a model",
                 "parameters": [
                     {
                         "type": "string",
@@ -292,14 +292,14 @@
                     },
                     {
                         "type": "string",
-                        "description": "tag ID",
+                        "description": "model ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "tag Updated",
-                        "name": "tag",
+                        "description": "model Updated",
+                        "name": "model",
                         "in": "body",
                         "required": true,
                         "schema": {

@@ -41,7 +41,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
+                "models": [
                     "commons"
                 ],
                 "summary": "returns the time from DB",
@@ -70,19 +70,19 @@ var doc = `{
                 }
             }
         },
-        "/tags": {
+        "/models": {
             "get": {
-                "description": "Get all the tags by defining the fields",
+                "description": "Get all the models by defining the fields",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Get all tags",
+                "summary": "Get all models",
                 "parameters": [
                     {
                         "type": "string",
@@ -124,21 +124,21 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Create a new tag item",
+                "description": "Create a new model item",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Create a tag",
+                "summary": "Create a model",
                 "parameters": [
                     {
-                        "description": "New tag",
-                        "name": "tag",
+                        "description": "New model",
+                        "name": "model",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -175,19 +175,19 @@ var doc = `{
                 }
             }
         },
-        "/tags/list": {
+        "/models/list": {
             "get": {
-                "description": "Get all the tags by ids",
+                "description": "Get all the models by ids",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Get all tags by ids",
+                "summary": "Get all models by ids",
                 "parameters": [
                     {
                         "type": "string",
@@ -201,8 +201,8 @@ var doc = `{
                         "items": {
                             "type": "string"
                         },
-                        "description": "Tags IDs",
-                        "name": "tagIds",
+                        "description": "Models IDs",
+                        "name": "modelIds",
                         "in": "query",
                         "required": true
                     }
@@ -229,19 +229,19 @@ var doc = `{
                 }
             }
         },
-        "/tags/{id}": {
+        "/models/{id}": {
             "get": {
-                "description": "Get a tag by id",
+                "description": "Get a model by id",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Get a tag",
+                "summary": "Get a model",
                 "parameters": [
                     {
                         "type": "string",
@@ -252,7 +252,7 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "Tag ID",
+                        "description": "Model ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -286,17 +286,17 @@ var doc = `{
                 }
             },
             "put": {
-                "description": "Update a tag item",
+                "description": "Update a model item",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "tags"
+                "models": [
+                    "models"
                 ],
-                "summary": "Update a tag",
+                "summary": "Update a model",
                 "parameters": [
                     {
                         "type": "string",
@@ -307,14 +307,14 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "tag ID",
+                        "description": "model ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "tag Updated",
-                        "name": "tag",
+                        "description": "model Updated",
+                        "name": "model",
                         "in": "body",
                         "required": true,
                         "schema": {

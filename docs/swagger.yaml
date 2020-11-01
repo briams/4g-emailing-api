@@ -72,13 +72,13 @@ paths:
           schema:
             $ref: '#/definitions/utils.ResponseMessage'
       summary: returns the time from DB
-      tags:
+      models:
       - commons
-  /tags:
+  /models:
     get:
       consumes:
       - application/json
-      description: Get all the tags by defining the fields
+      description: Get all the models by defining the fields
       parameters:
       - description: API_KEY Header
         in: header
@@ -107,17 +107,17 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.ResponseMessage'
-      summary: Get all tags
-      tags:
-      - tags
+      summary: Get all models
+      models:
+      - models
     post:
       consumes:
       - application/json
-      description: Create a new tag item
+      description: Create a new model item
       parameters:
-      - description: New tag
+      - description: New model
         in: body
-        name: tag
+        name: model
         required: true
         schema:
           $ref: '#/definitions/validators.CreateBody'
@@ -141,21 +141,21 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.ResponseMessage'
-      summary: Create a tag
-      tags:
-      - tags
-  /tags/{id}:
+      summary: Create a model
+      models:
+      - models
+  /models/{id}:
     get:
       consumes:
       - application/json
-      description: Get a tag by id
+      description: Get a model by id
       parameters:
       - description: API_KEY Header
         in: header
         name: API_KEY
         required: true
         type: string
-      - description: Tag ID
+      - description: model ID
         in: path
         name: id
         required: true
@@ -179,27 +179,27 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.ResponseMessage'
-      summary: Get a tag
-      tags:
-      - tags
+      summary: Get a model
+      models:
+      - models
     put:
       consumes:
       - application/json
-      description: Update a tag item
+      description: Update a model item
       parameters:
       - description: API_KEY Header
         in: header
         name: API_KEY
         required: true
         type: string
-      - description: tag ID
+      - description: model ID
         in: path
         name: id
         required: true
         type: string
-      - description: tag Updated
+      - description: model Updated
         in: body
-        name: tag
+        name: model
         required: true
         schema:
           $ref: '#/definitions/validators.UpdateBody'
@@ -222,25 +222,25 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.ResponseMessage'
-      summary: Update a tag
-      tags:
-      - tags
-  /tags/list:
+      summary: Update a model
+      models:
+      - models
+  /models/list:
     get:
       consumes:
       - application/json
-      description: Get all the tags by ids
+      description: Get all the models by ids
       parameters:
       - description: API_KEY Header
         in: header
         name: API_KEY
         required: true
         type: string
-      - description: Tags IDs
+      - description: models IDs
         in: query
         items:
           type: string
-        name: tagIds
+        name: modelIds
         required: true
         type: array
       produces:
@@ -258,7 +258,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.ResponseMessage'
-      summary: Get all tags by ids
-      tags:
-      - tags
+      summary: Get all models by ids
+      models:
+      - models
 swagger: "2.0"

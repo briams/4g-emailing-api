@@ -31,7 +31,7 @@ func initSetup() *echo.Echo {
 	// refreshData(rdb)
 
 	// App Routes
-	routes.ParamRoutes(e, db)
+	routes.ModelRoutes(e, db)
 	routes.CommonRoutes(e, db)
 
 	// Swagger Docs

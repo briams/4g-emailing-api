@@ -4,7 +4,7 @@ import "strconv"
 
 // StringToUintSlice converts a string slice to uint slice
 func StringToUintSlice(stringSlice []string) ([]uint, error) {
-	tagIDsSliceInts := make([]uint, 0)
+	modelIDsSliceInts := make([]uint, 0)
 
 	for _, s := range stringSlice {
 		sInt, err := strconv.Atoi(s)
@@ -12,8 +12,8 @@ func StringToUintSlice(stringSlice []string) ([]uint, error) {
 			return nil, err
 		}
 
-		tagIDsSliceInts = append(tagIDsSliceInts, uint(sInt))
+		modelIDsSliceInts = append(modelIDsSliceInts, uint(sInt))
 	}
 
-	return tagIDsSliceInts, nil
+	return modelIDsSliceInts, nil
 }

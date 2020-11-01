@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// CommonHandler has the param handlers
+// CommonHandler has the Emailig handlers
 type CommonHandler struct {
 	DB *sql.DB
 }
@@ -24,7 +24,7 @@ func NewCommonHandler(db *sql.DB) *CommonHandler {
 // CheckDBHealth godoc
 // @Summary returns the time from DB
 // @Description returns the time from DB
-// @Tags commons
+// @Emailing commons
 // @Accept json
 // @Produce json
 // @Param API_KEY header string required "API_KEY Header"
@@ -34,8 +34,8 @@ func NewCommonHandler(db *sql.DB) *CommonHandler {
 func (p *CommonHandler) CheckDBHealth(c echo.Context) error {
 	mr := utils.ResponseMessage{}
 
-	storageParam := storage.NewMySQLCommon(p.DB)
-	now, err := storageParam.CheckDBHealth()
+	storageModel := storage.NewMySQLCommon(p.DB)
+	now, err := storageModel.CheckDBHealth()
 	if err != nil {
 		log.Printf("error: Cannot retrieve the now time from DB. Handler common.CheckDBHealth: %v", err)
 		mr.AddError(

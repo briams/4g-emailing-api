@@ -8,12 +8,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// ParamRoutes registers param routes
-func ParamRoutes(e *echo.Echo, db *sql.DB) {
+// ModelRoutes registers model routes
+func ModelRoutes(e *echo.Echo, db *sql.DB) {
 	r := e.Group("/api/v1/models")
 	r.Use(middlewares.HasAPIKeyHeader)
 
-	h := handlers.NewTagHandler(db)
+	h := handlers.NewModelHandler(db)
 	r.POST("", h.Create)
 	r.GET("", h.GetAll)
 	r.GET("/:id", h.GetByID)
