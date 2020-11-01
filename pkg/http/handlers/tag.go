@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/briams/4g-emailing-api/db/rds"
 	"github.com/briams/4g-emailing-api/pkg/http/validators"
 	"github.com/briams/4g-emailing-api/pkg/models/tag"
 	"github.com/briams/4g-emailing-api/pkg/storage"
@@ -17,13 +16,12 @@ import (
 
 // TagHandler has the tag handlers
 type TagHandler struct {
-	DB        *sql.DB
-	RdsClient *rds.Rds
+	DB *sql.DB
 }
 
 // NewTagHandler returns a New TagHandler
-func NewTagHandler(db *sql.DB, rdb *rds.Rds) *TagHandler {
-	return &TagHandler{db, rdb}
+func NewTagHandler(db *sql.DB) *TagHandler {
+	return &TagHandler{db}
 }
 
 // Create godoc
@@ -70,7 +68,7 @@ func (p *TagHandler) Create(c echo.Context) error {
 	m.Variables = b.Variables
 	m.InsUserID = b.InsUserID
 
-	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
+	storageTag := storage.NewMySQLTag(p.DB, nil, nil)
 	serviceTag := tag.NewService(storageTag)
 	err = serviceTag.Create(m)
 	if errors.Is(err, tag.ErrModelAlreadyExist) {
@@ -127,7 +125,7 @@ func (p *TagHandler) GetAll(c echo.Context) error {
 	// 	return c.JSON(http.StatusBadRequest, mr)
 	// }
 
-	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
+	storageTag := storage.NewMySQLTag(p.DB, nil, nil)
 	serviceTag := tag.NewService(storageTag)
 	// res, err := serviceTag.GetAllWithFields(tagFieldsSlice...)
 	res, err := serviceTag.GetAll()
@@ -184,7 +182,7 @@ func (p *TagHandler) GetByID(c echo.Context) error {
 	// 	return c.JSON(http.StatusUnprocessableEntity, mr)
 	// }
 
-	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
+	storageTag := storage.NewMySQLTag(p.DB, nil, nil)
 	serviceTag := tag.NewService(storageTag)
 	res, err := serviceTag.GetByID(id)
 
@@ -270,7 +268,9 @@ func (p *TagHandler) Update(c echo.Context) error {
 	m.Variables = b.Variables
 	m.InsUserID = b.SetUserID
 
-	storageTag := storage.NewRedisTag(p.DB, p.RdsClient)
+	storageAudit := storage.NewMySQLTagAudit(p.DB)
+
+	storageTag := storage.NewMySQLTag(p.DB, storageAudit, nil)
 	serviceTag := tag.NewService(storageTag)
 	err = serviceTag.Update(m)
 

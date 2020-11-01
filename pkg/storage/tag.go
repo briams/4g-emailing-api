@@ -27,7 +27,7 @@ var (
 	mysqlGetTagByID   = mysqlGetAllTags + " WHERE modelId = ?"
 	mysqlGetTagsByIDs = mysqlGetAllTags + " WHERE modelId IN "
 	mysqlUpdateActive = fmt.Sprintf(`UPDATE %s SET
-		active = ? WHERE serviceId = ?`, tableTag)
+		active = ? WHERE modelId = ?`, tableTag)
 )
 
 // MySQLTag used for work with mySQL - para

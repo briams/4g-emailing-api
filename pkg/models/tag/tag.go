@@ -71,7 +71,15 @@ func NewService(s Storage) *Service {
 func (s *Service) Create(m *Model) error {
 	currentModel, err := s.GetByID(m.ModelID)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, redis.Nil) {
-		m.Html = m.Mjml
+
+		mjml, err := mjmlparser.GenerateMJMLWithData(m.Mjml, map[string]interface{}{})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		res := mjmlparser.ParserMJMLtoHTML(mjml)
+		m.Html = res.MJMLReplyResponse.HTML
+
 		return s.storage.Create(m)
 	}
 	if currentModel.ModelID == m.ModelID {
@@ -114,16 +122,12 @@ func (s *Service) Update(m *Model) error {
 	}
 
 	mjml, err := mjmlparser.GenerateMJMLWithData(m.Mjml, map[string]interface{}{})
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	res := mjmlparser.ParserMJMLtoHTML(mjml)
-
 	m.Html = res.MJMLReplyResponse.HTML
-	// m.Mjml
-	// fmt.Println("HTML: ", res.MJMLReplyResponse.HTML)
 
 	return s.storage.Update(m)
 }

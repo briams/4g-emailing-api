@@ -27,11 +27,11 @@ func initSetup() *echo.Echo {
 	}))
 
 	db := newConnection()
-	rdb := newRedisClient()
-	refreshData(rdb)
+	// rdb := newRedisClient()
+	// refreshData(rdb)
 
 	// App Routes
-	routes.ParamRoutes(e, db, rdb)
+	routes.ParamRoutes(e, db)
 	routes.CommonRoutes(e, db)
 
 	// Swagger Docs
